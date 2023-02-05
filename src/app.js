@@ -546,6 +546,10 @@ app.post("/bots/:id/delete", checkAuth, async (req, res) => {
       return res
         .status(400)
         .json({ message: "This is not a real application on Discord." });
+
+      let guild = client.guilds.cache.get(global.config.guilds.main);
+      const kickBot = guild.members.cache.get(bot.id);
+      kickBot.kick("Deleted from Universe List.");
     await botm.delete();
 
     const date = new Date();
@@ -554,7 +558,7 @@ app.post("/bots/:id/delete", checkAuth, async (req, res) => {
       .setDescription(
         "<:ul_no:946581450600370298> " +
           bot.tag +
-          " has been edited on Universe List."
+          " has been deleted on Universe List."
       )
       .setColor("Red")
       .addFields({
@@ -656,7 +660,7 @@ app.post("/bots/:id/vote", checkAuth, async (req, res) => {
     .setDescription(
       `<:vote:1043639183991898203> ${bot.name}#${bot.discriminator} has been voted on Universe List.`
     )
-    .setColor("#8694c3")
+    .setColor("#7289da")
     .addFields(
       {
         name: "Bot",
@@ -1302,7 +1306,7 @@ app.post("/servers/:id/vote", checkAuth, async (req, res) => {
     .setDescription(
       `<:vote:1043639183991898203> ${server.name} has been voted on Universe Servers.`
     )
-    .setColor("#8694c3")
+    .setColor("#7289da")
     .addFields(
       {
         name: "Server",
@@ -1620,7 +1624,7 @@ app.post("/bots/:id/deny", checkAuth, checkStaff, async (req, res) => {
     .setColor("Red")
     .addFields({
       name: "Bot",
-      value: `[${bot.tag}](https://universe-list.xyz/bots/${bot.id})`,
+      value: `[${bot.tag}](https://universe-list.xyz/)`,
       inline: true,
     })
     .addFields({
@@ -1824,6 +1828,10 @@ app.get("/github", (_req, res) =>
   res.redirect("https://github.com/ishaantek/UniverseList")
 );
 
+app.get("/newbot", (_req, res) =>
+  res.redirect("https://universe-list.xyz/bots/new")
+);
+
 app.get("/delete", async (req, res) => {
   res.render("botlist/delete.ejs", { user: req.user || null });
 });
@@ -1850,6 +1858,10 @@ app.get("/privacy", async (req, res) => {
 
 app.get("/bot-requirements", async (req, res) => {
   res.render("legal/bot-requirements.ejs", { user: req.user });
+});
+
+app.get("/invite", async (req, res) => {
+  res.render("invite.ejs", { user: req.user });
 });
 
 app.get("/403", async (req, res) => {

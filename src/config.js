@@ -2,8 +2,13 @@ const dotenv = require('dotenv')
 dotenv.config();
 
 module.exports = {
-  port: 55113,
-  staff: ["998763334264442912", "536538183555481601", "642085851429339157"],
+  port: 55558,
+  staff: [
+    "998763334264442912",
+    "536538183555481601",
+    "642085851429339157",
+    "271285474516140033",
+  ],
   owners: ["998763334264442912"],
   developers: ["998763334264442912"],
   betatesters: ["998763334264442912"],
@@ -61,7 +66,7 @@ module.exports = {
       "Anime",
       "E-Sport",
       "Meme",
-      "Music"
+      "Music",
     ],
     bots: [
       "Moderation",
