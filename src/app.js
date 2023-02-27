@@ -1066,8 +1066,15 @@ app.get("/servers/:id", async (req, res) => {
 
   if (server.published === false) {
     if (!req.user) return res.redirect("/404?error=503");
-    if (!server.owner.includes(req.user.id))
-      return res.redirect("/404?error=503");
+    const guild = await global.sclient.guilds.fetch(id);
+    if (!guild) return res.redirect("/404");
+    const member = await guild.members.fetch(req.user.id);
+    if (
+      !member.permissions.has("ADMINISTRATOR") &&
+      !server.owner.includes(req.user.id)
+    ) {
+      return res.redirect("/403");
+    }
   }
 
   server.views = parseInt(server.views) + 1;
@@ -1155,13 +1162,15 @@ app.get("/servers/:id/edit", checkAuth, async (req, res) => {
   const server = await global.serverModel.findOne({ id: id });
   if (!server) return res.redirect("/404");
 
-  if (req.user.id !== server.owner) return res.redirect("/403");
+  const guild = await global.sclient.guilds.fetch(id);
+  if (!guild) return res.redirect("/404");
 
-  const ServerRaw = (await global.sclient.guilds.fetch(id)) || null;
+  const member = await guild.members.fetch(req.user.id);
+  if (!member.permissions.has("ADMINISTRATOR")) return res.redirect("/403");
 
-  (server.name = ServerRaw.name),
-    (server.icon = ServerRaw.iconURL()),
-    (server.memberCount = ServerRaw.memberCount);
+  server.name = guild.name;
+  server.icon = guild.iconURL();
+  server.memberCount = guild.memberCount;
 
   res.render("servers/editserver.ejs", {
     bot: req.bot,
@@ -1858,11 +1867,7 @@ app.get("/privacy", async (req, res) => {
 
 app.get("/bot-requirements", async (req, res) => {
   res.render("legal/bot-requirements.ejs", { user: req.user });
-});
-
-app.get("/invite", async (req, res) => {
-  res.render("invite.ejs", { user: req.user });
-});
+}); 
 
 app.get("/403", async (req, res) => {
   res.render("errors/403.ejs", { user: req.user });
